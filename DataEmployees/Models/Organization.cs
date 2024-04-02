@@ -2,7 +2,7 @@
 
 namespace DataEmployees.Models
 {
-    public class Organization
+    public class Organization 
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Введите наименование организации?")]

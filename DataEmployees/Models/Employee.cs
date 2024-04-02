@@ -2,7 +2,7 @@
 
 namespace DataEmployees.Models
 {
-    public class Employee
+    public class Employee 
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Введите Имя и Отчество работника (при наличии)?")]
