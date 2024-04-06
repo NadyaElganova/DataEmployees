@@ -5,21 +5,19 @@ namespace DataEmployees.Models
     public class Employee 
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "Введите Имя и Отчество работника (при наличии)?")]
+        [Required(ErrorMessage = "Введите Имя и Отчество работника (при наличии)")]
         [MaxLength(40)]
-        public string FirstName { get; set; } //имя, отчество
-        [Required(ErrorMessage = "Введите Фамилию работника?")]
+        public string FirstName { get; set; }
+        [Required(ErrorMessage = "Введите Фамилию работника")]
         [MaxLength(50)]
-        public string SecondName { get; set; } //фамилия
-        [Required(ErrorMessage = "Введите серию паспорта?")]
+        public string SecondName { get; set; }
+        [Required(ErrorMessage = "Введите серию паспорта")]
         [MaxLength(4)]
-        [MinLength(4)]
         public string SeriesPassport { get; set; }
-        [Required(ErrorMessage = "Введите номер паспорта?")]
+        [Required(ErrorMessage = "Введите номер паспорта")]
         [MaxLength(6)]
-        [MinLength(6)]
         public string NumberPassport { get; set; }
-        [Required(ErrorMessage = "Введите дату рождения работника?")]
+        [Required(ErrorMessage = "Введите дату рождения работника")]
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
         public Organization Organization { get; set; }

@@ -1,7 +1,4 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
+﻿@model DataViewModel
 
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -10,49 +7,63 @@
     </div>
 </nav>
 
+@if (TempData.ContainsKey("status"))
+{
+    <div class="alert mt-3 alert-warning alert-dismissible fade show" role="alert">
+        <strong>Уведомление: </strong> @TempData["status"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="tab-content mt-5 justify-content-center" id="nav-tabContent">
 
     <div class="tab-pane fade show active justify-content-center" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="container d-flex justify-content-center">
-            <form class="tab-add">
+            <form class="tab-add" asp-controller="Home" asp-action="AddEmployee" method="post" enctype="multipart/form-data">
+                
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputSecondName" class="col-sm-4 col-form-label">Фамилия работника</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="exampleInputSecondName" aria-describedby="secondNameHelp">
+                    <input asp-for="@Model.Employee.SecondName" type="text" required class="form-control" id="exampleInputSecondName" aria-describedby="secondNameHelp">
+                    <span asp-validation-for="@Model.Employee.SecondName" class="text-danger"></span>
+                    <span id="errorSN" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputFirstName" class="col-sm-4 col-form-label">Имя и Отчество (при наличии)</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="exampleInputFirstName">
+                        <input asp-for="@Model.Employee.FirstName" type="text" required class="form-control" id="exampleInputFirstName">
+                        <span asp-validation-for="@Model.Employee.FirstName" class="text-danger"></span>
+                        <span id="errorFN" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputSeries" class="col-sm-4 col-form-label">Серия паспорта</label>
                 <div class="col-sm-8">
-                    <input type="number" class="form-control" id="exampleInputFirstSeries">
+                        <input asp-for="@Model.Employee.SeriesPassport" required class="form-control" id="exampleInputSeries">
+                        <span asp-validation-for="@Model.Employee.SeriesPassport" class="text-danger"></span>
+                        <span id="errorSeries" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputNumber" class="col-sm-4 col-form-label">Номер паспорта</label>
                 <div class="col-sm-8">
-                    <input type="number" class="form-control" id="exampleInputFirstNumber">
+                        <input asp-for="@Model.Employee.NumberPassport" required class="form-control" id="exampleInputNumber">
+                        <span asp-validation-for="@Model.Employee.NumberPassport" class="text-danger"></span>
+                        <span id="errorNumber" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputDate" class="col-sm-4 col-form-label">Дата рождения</label>
                 <div class="col-sm-8">
-                    <input type="date" class="form-control" id="exampleInputFirstDate">
+                        <input asp-for="@Model.Employee.BirthDate" type="date" required class="form-control" id="exampleInputBirthDate">
+                        <span asp-validation-for="@Model.Employee.BirthDate" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputDate" class="col-sm-4 col-form-label">Организация</label>
                 <div class="col-sm-8">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Компания</option>
-                        <option value="1">Компания One</option>
-                        <option value="2">Компания Two</option>
-                        <option value="3">Компания Three</option>
+                        <select name="organizations" asp-items="ViewBag.organizations" class="form-select" aria-label="Default select example">
                     </select>
                 </div>
             </div>
@@ -63,29 +74,35 @@
 
     <div class="tab-pane fade justify-content-center" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
         <div class="container d-flex justify-content-center">
-            <form class="tab-add">
+            <form asp-controller="Home" asp-action="AddOrganization" class="tab-add" method="post" enctype="multipart/form-data">
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputName" class="col-sm-4 col-form-label">Наименование организации</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="exampleInputName" aria-describedby="NameHelp">
+                        <input asp-for="@Model.Organization.Name" type="text" required class="form-control" id="exampleInputName" aria-describedby="NameHelp">
+                        <span asp-validation-for="@Model.Organization.Name" class="text-danger"></span>
+                        <span id="errorName" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputInn" class="col-sm-4 col-form-label">Инн</label>
                 <div class="col-sm-8">
-                    <input type="number" class="form-control" id="exampleInputInn">
+                        <input asp-for="@Model.Organization.Inn" required class="form-control" id="exampleInputInn">
+                        <span asp-validation-for="@Model.Organization.Inn" class="text-danger"></span>
+                        <span id="errorInn" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputAdress" class="col-sm-4 col-form-label">Юридический адрес</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="exampleInputAdress">
+                        <input asp-for="@Model.Organization.LegalAdress" type="text" required class="form-control" id="exampleInputAdress">
+                        <span asp-validation-for="@Model.Organization.LegalAdress" class="text-danger"></span>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
                 <label for="exampleInputFAdress" class="col-sm-4 col-form-label">Фактический адрес</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="exampleInputFAdress">
+                        <input asp-for="@Model.Organization.ActualAdress" type="text" required class="form-control" id="exampleInputActualAdress">
+                        <span asp-validation-for="@Model.Organization.ActualAdress" class="text-danger"></span>
                 </div>
             </div>
             <button type="submit" class="btn btn-secondary col-12">Добавить организацию</button>
@@ -94,3 +111,91 @@
     </div>
 
 </div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"></partial>
+
+    <script>
+        $(document).ready(function () {
+            $('#exampleInputBirthDate').change(function () {
+                var birthDate = new Date($(this).val());
+                var currentDate = new Date();
+                var age = currentDate.getFullYear() - birthDate.getFullYear();
+                if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() == birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                if (age < 18) {
+                    alert('Сотрудник должен быть старше 18 лет');
+                    $(this).val('');
+                }
+            });
+
+            $('#exampleInputNumber').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $("#errorNumber");
+                var numberPattern = /^[0-9]+$/;
+                if (inputValue.length != 6 || !numberPattern.test(inputValue)) {
+                    spanText.text("Номер паспорта должен состоять из 6 цифр");                
+                } else {
+                    spanText.text("");
+                }
+            });
+
+            $('#exampleInputSeries').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $("#errorSeries");
+                var numberPattern = /^[0-9]+$/;
+                if (inputValue.length != 4 || !numberPattern.test(inputValue)) {
+                    spanText.text("Серия паспорта должна состоять из 4 цифр");
+                } else {
+                    spanText.text("");
+                }
+            });
+
+            $('#exampleInputSecondName').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $("#errorSN");
+                var pattern = /^[А-Яа-яЁёA-Za-z]*$/;
+                if (inputValue.length < 2 || !pattern.test(inputValue)) {
+                    spanText.text("Фамилия должна состоять из букв, из 2 и более символов");
+                } else {
+                    spanText.text("");
+                }
+            });
+
+            $('#exampleInputFirstName').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $("#errorFN");
+                var pattern = /^[А-Яа-яЁёA-Za-z]*$/;
+                if (inputValue.length < 2 || !pattern.test(inputValue)) {
+                    spanText.text("Имя должно состоять из букв, из 2 и более символов");
+                } else {
+                    spanText.text("");
+                }
+            });
+
+            $('#exampleInputName').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $('#errorName');
+                if (inputValue.length < 4) {
+                    spanText.text("Наименование должно состоять из 4 и более символов");
+                } else {
+                    spanText.text("");
+                }
+            });
+
+            $('#exampleInputInn').on("change", function () {
+                var inputValue = $(this).val();
+                var spanText = $('#errorInn');
+                var numberPattern = /^[0-9]+$/;
+                if (inputValue.length != 10 || !numberPattern.test(inputValue)) {
+                    spanText.text("Инн должен состоять из 10 цифр");
+                } else {
+                    spanText.text("");
+                }
+            });
+        });
+    </script>
+
+}
+
