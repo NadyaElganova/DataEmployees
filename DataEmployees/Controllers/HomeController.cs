@@ -40,17 +40,17 @@ namespace DataEmployees.Controllers
         [HttpGet]
         public async Task<IActionResult> ExportEmployeesExcel()
         {
-            var csvData = await _csvIOService.ExportEmployeesToCsvAsync();
+            var csvData = await _csvIOService.ExportToCsvAsync(await _employeeService.GetAllEmpoyeesAsync());
             return File(csvData, "text/csv", $"employees_{DateTime.Now}.csv");
         }
         [HttpGet]
         public async Task<IActionResult> ExportOrganizationsExcel()
         {
-            var csvData = await _csvIOService.ExportOrganizationsToCsvAsync();
+            var csvData = await _csvIOService.ExportToCsvAsync(await _organizationService.GetAllOrganizationsAsync());
             return File(csvData, "text/csv", $"organizations_{DateTime.Now}.csv");
         }        
         [HttpPost]
-        public async Task<IActionResult> ImportEmployeesExcel(IFormFile file)
+        public async Task<IActionResult> ImportEmployeesFromCsv(IFormFile file)
         {
             try
             {
@@ -62,6 +62,20 @@ namespace DataEmployees.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
             return RedirectToAction("GetAllEmployees");
+        }
+        [HttpPost]
+        public async Task<IActionResult> ImportOrganizationsFromCsv(IFormFile file)
+        {
+            try
+            {
+                await _csvIOService.ImportOrganizationsFromCsvAsync(file);
+                TempData["status"] = "Данные успешно импортированы.";
+            }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return RedirectToAction("GetAllOrganizations");
         }
 
         [HttpPost]
@@ -77,7 +91,7 @@ namespace DataEmployees.Controllers
 
                     if(await _employeeService.AddEmployeeAsync(employee))
                     {
-                        TempData["status"] = "Работник успешно добавлен!";
+                        TempData["status"] = "Сотрудник успешно добавлен!";
                         return RedirectToAction("Index");
                     }
                     TempData["status"] = "Ошибка при сохранении.";
@@ -89,7 +103,7 @@ namespace DataEmployees.Controllers
             }
             else
             {
-                TempData["status"] = "Добавьте для начало организацию.";
+                TempData["status"] = "Добавьте сначала организацию.";
             }
             return RedirectToAction("Index");
         }

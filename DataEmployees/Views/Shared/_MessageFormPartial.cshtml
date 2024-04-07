@@ -1,0 +1,9 @@
+﻿@model MessageViewModel
+
+@if (@Model!=null)
+{
+    <div class="alert mt-3 alert-warning alert-dismissible fade show" role="alert">
+        <strong>Уведомление: </strong> @Model.Status
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

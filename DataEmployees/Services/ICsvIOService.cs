@@ -1,9 +1,11 @@
-﻿namespace DataEmployees.Services
+﻿using DataEmployees.Models;
+
+namespace DataEmployees.Services
 {
     public interface ICsvIOService
     {
-        Task<byte[]> ExportEmployeesToCsvAsync();
+        Task<byte[]> ExportToCsvAsync<T>(IEnumerable<T> data) where T : IExportableToCsv;
         Task ImportEmployeesFromCsvAsync(IFormFile file);
-        Task<byte[]> ExportOrganizationsToCsvAsync();
+        Task ImportOrganizationsFromCsvAsync(IFormFile file);
     }
 }

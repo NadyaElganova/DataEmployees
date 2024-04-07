@@ -13,27 +13,14 @@ namespace DataEmployees.Services
         {
             _context = context;
         }
-        public async Task<byte[]> ExportEmployeesToCsvAsync()
+
+        public async Task<byte[]> ExportToCsvAsync<T>(IEnumerable<T> data) where T : IExportableToCsv
         {
-            var employees = await _context.Employees.Include(e => e.Organization).ToListAsync();
             var csv = new StringBuilder();
 
-            foreach (var employee in employees)
+            foreach (var item in data)
             {
-                csv.AppendLine($"{employee.FirstName},{employee.SecondName},{employee.SeriesPassport},{employee.NumberPassport},{employee.BirthDate:yyyy-MM-dd HH:mm:ss.fffffff},{employee.Organization?.Id}");
-            }
-
-            return Encoding.UTF8.GetBytes(csv.ToString());
-        }
-
-        public async Task<byte[]> ExportOrganizationsToCsvAsync()
-        {
-            var organizations = await _context.Organizations.ToListAsync();
-            var csv = new StringBuilder();
-
-            foreach (var org in organizations)
-            {
-                csv.AppendLine($"{org.Name},{org.Inn},{org.LegalAdress},{org.ActualAdress}");
+                csv.AppendLine(item.ToCsvString());
             }
 
             return Encoding.UTF8.GetBytes(csv.ToString());
@@ -72,6 +59,37 @@ namespace DataEmployees.Services
             }
 
             await _context.AddRangeAsync(employees);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ImportOrganizationsFromCsvAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                throw new ArgumentException("Файл не был загружен.");
+            }
+
+            var organizations = new List<Organization>();
+
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = await reader.ReadLineAsync();
+                    var values = line.Split(',');
+
+                    var organization = new Organization
+                    {
+                        Name = values[0],
+                        Inn = values[1],
+                        LegalAdress = values[2],
+                        ActualAdress = values[3]
+                    };
+                   organizations.Add(organization);
+                }
+            }
+
+            await _context.AddRangeAsync(organizations);
             await _context.SaveChangesAsync();
         }
     }

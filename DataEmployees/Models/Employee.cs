@@ -2,7 +2,7 @@
 
 namespace DataEmployees.Models
 {
-    public class Employee 
+    public class Employee: IExportableToCsv
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Введите Имя и Отчество работника (при наличии)")]
@@ -21,5 +21,10 @@ namespace DataEmployees.Models
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
         public Organization Organization { get; set; }
+
+        public string ToCsvString()
+        {
+            return $"{FirstName},{SecondName},{SeriesPassport},{NumberPassport},{BirthDate:yyyy-MM-dd HH:mm:ss.fffffff},{Organization?.Id}";
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DataEmployees.Models
 {
-    public class Organization 
+    public class Organization: IExportableToCsv
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Введите наименование организации")]
@@ -18,5 +18,10 @@ namespace DataEmployees.Models
         [MaxLength(50)]
         public string ActualAdress { get; set; }
         public ICollection<Employee> Employees { get; set; }
+
+        public string ToCsvString()
+        {
+            return $"{Name},{Inn},{LegalAdress},{ActualAdress}";
+        }
     }
 }

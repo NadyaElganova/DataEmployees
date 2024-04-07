@@ -9,10 +9,9 @@
 
 @if (TempData.ContainsKey("status"))
 {
-    <div class="alert mt-3 alert-warning alert-dismissible fade show" role="alert">
-        <strong>Уведомление: </strong> @TempData["status"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    var status = TempData["status"] as string;
+    var model = new MessageViewModel { Status = status };
+    <partial name="_MessageFormPartial" model="model" />
 }
 
 <div class="tab-content mt-5 justify-content-center" id="nav-tabContent">
@@ -166,7 +165,7 @@
             $('#exampleInputFirstName').on("change", function () {
                 var inputValue = $(this).val();
                 var spanText = $("#errorFN");
-                var pattern = /^[А-Яа-яЁёA-Za-z]*$/;
+                var pattern = /^[А-Яа-яЁёA-Za-z\s]*$/;
                 if (inputValue.length < 2 || !pattern.test(inputValue)) {
                     spanText.text("Имя должно состоять из букв, из 2 и более символов");
                 } else {

@@ -2,19 +2,18 @@
 
 @if (TempData.ContainsKey("status"))
 {
-    <div class="alert mt-3 alert-warning alert-dismissible fade show" role="alert">
-        <strong>Уведомление! </strong>@TempData["status"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    var status = TempData["status"] as string;
+    var model = new MessageViewModel { Status = status };
+    <partial name="_MessageFormPartial" model="model" />
 }
 <div class="row">
     <div class="col">
         <form asp-action="ExportOrganizationsExcel" asp-controller="Home" class="input-group" method="get" enctype="multipart/form-data">
-            <button type="submit" class="btn btn-outline-success">Сохранить в csv</button>
+            <button id="saveCsvButton" type="submit" class="btn btn-outline-success">Сохранить в csv</button>
         </form>
     </div>
     <div class="col-auto">
-        <form asp-action="ImportOrganizationsExcel" asp-controller="Home" method="post" class="input-group" enctype="multipart/form-data">
+        <form asp-action="ImportOrganizationsFromCsv" asp-controller="Home" method="post" class="input-group" enctype="multipart/form-data">
             <input type="file" name="file" required class="form-control" accept=".csv" multiple="multiple">
             <button class="btn btn-outline-secondary" type="submit">Импортировать из cvs</button>
         </form>
@@ -50,4 +49,16 @@
 else
 {
     <h1>Список организаций пуст!</h1>
+}
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var modelCount = @Json.Serialize(Model.Count());
+
+            if (modelCount === 0 || modelCount === null) {
+                $("#saveCsvButton").prop("disabled", true);
+            }
+        });
+    </script>
 }
