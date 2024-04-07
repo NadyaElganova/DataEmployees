@@ -26,43 +26,72 @@ namespace DataEmployees.Services
             return Encoding.UTF8.GetBytes(csv.ToString());
         }
 
-        public async Task ImportEmployeesFromCsvAsync(IFormFile file)
+        public async Task<string> ImportEmployeesFromCsvAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
-                throw new ArgumentException("Файл не был загружен.");
+                return "Файл не был загружен.";
             }
 
             var employees = new List<Employee>();
-
-            using (var reader = new StreamReader(file.OpenReadStream()))
+            try
             {
-                while (!reader.EndOfStream)
+                using (var reader = new StreamReader(file.OpenReadStream()))
                 {
-                    var line = await reader.ReadLineAsync();
-                    var values = line.Split(',');
-
-                    var employee = new Employee
+                    while (!reader.EndOfStream)
                     {
-                        FirstName = values[0],
-                        SecondName = values[1],
-                        SeriesPassport = values[2],
-                        NumberPassport = values[3],
-                        BirthDate = DateTime.ParseExact(values[4], "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture),
-                    };
-                    int organizationId = int.Parse(values[5]);
+                        var line = await reader.ReadLineAsync();
+                        var values = line.Split(',');
 
-                    employee.Organization = await _context.Organizations.FindAsync(organizationId);
-
-                    employees.Add(employee);
+                        var employee = new Employee
+                        {
+                            FirstName = values[0],
+                            SecondName = values[1],
+                            SeriesPassport = values[2],
+                            NumberPassport = values[3]
+                        };
+                        if (DateTime.TryParseExact(values[4], "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate))
+                        {
+                            employee.BirthDate = birthDate;
+                        }
+                        else
+                        {
+                            throw new FormatException($"Ошибка при парсинге даты: {values[4]}");
+                        }
+                        int organizationId;
+                        if (int.TryParse(values[5], out organizationId))
+                        {
+                            var organization = await _context.Organizations.FindAsync(organizationId);
+                            if (organization != null)
+                            {
+                                employee.Organization = organization;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"Организация с Id {organizationId} не найдена.");
+                            }
+                        }
+                        else
+                        {
+                            throw new FormatException($"Неверный формат идентификатора организации: {values[5]}");
+                        }
+                        employees.Add(employee);
+                    }
                 }
-            }
 
-            await _context.AddRangeAsync(employees);
-            await _context.SaveChangesAsync();
+                await _context.AddRangeAsync(employees);
+                await _context.SaveChangesAsync();
+
+                return "Данные успешно импортированы.";
+            }
+            catch (Exception ex)
+            {
+                return $"Exception: {ex.Message}";
+            }
         }
 
-        public async Task ImportOrganizationsFromCsvAsync(IFormFile file)
+
+        public async Task<string> ImportOrganizationsFromCsvAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -70,27 +99,38 @@ namespace DataEmployees.Services
             }
 
             var organizations = new List<Organization>();
-
-            using (var reader = new StreamReader(file.OpenReadStream()))
+            try
             {
-                while (!reader.EndOfStream)
+                using (var reader = new StreamReader(file.OpenReadStream()))
                 {
-                    var line = await reader.ReadLineAsync();
-                    var values = line.Split(',');
-
-                    var organization = new Organization
+                    while (!reader.EndOfStream)
                     {
-                        Name = values[0],
-                        Inn = values[1],
-                        LegalAdress = values[2],
-                        ActualAdress = values[3]
-                    };
-                   organizations.Add(organization);
-                }
-            }
+                        var line = await reader.ReadLineAsync();
+                        var values = line.Split(',');
+                        if (values.Length != 4)
+                        {
+                            throw new FormatException("Неверное количество значений в строке CSV файла.");
+                        }
 
-            await _context.AddRangeAsync(organizations);
-            await _context.SaveChangesAsync();
+                        var organization = new Organization
+                        {
+                            Name = values[0],
+                            Inn = values[1],
+                            LegalAdress = values[2],
+                            ActualAdress = values[3]
+                        };
+                        organizations.Add(organization);
+                    }
+                }
+
+                await _context.AddRangeAsync(organizations);
+                await _context.SaveChangesAsync();
+                return "Данные успешно импортированы.";
+            }
+            catch (Exception ex)
+            {
+                return $"Exception: {ex.Message}";
+            }           
         }
     }
 }

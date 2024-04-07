@@ -54,12 +54,12 @@ namespace DataEmployees.Controllers
         {
             try
             {
-                await _csvIOService.ImportEmployeesFromCsvAsync(file);
-                TempData["status"] = "Данные успешно импортированы.";
+                var result = await _csvIOService.ImportEmployeesFromCsvAsync(file);
+                TempData["status"] = result;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["status"] = ex.Message;
             }
             return RedirectToAction("GetAllEmployees");
         }
@@ -68,12 +68,12 @@ namespace DataEmployees.Controllers
         {
             try
             {
-                await _csvIOService.ImportOrganizationsFromCsvAsync(file);
-                TempData["status"] = "Данные успешно импортированы.";
+                var result = await _csvIOService.ImportOrganizationsFromCsvAsync(file);
+                TempData["status"] = result;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["status"] = ex.Message;
             }
             return RedirectToAction("GetAllOrganizations");
         }
